@@ -1,0 +1,75 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace Course_Discussion.Accounts.Instructor
+{
+    public partial class Terminate : System.Web.UI.Page
+    {
+        string username = "", discussionId = "", entryId = "";
+        int roleId = 0;
+        SqlConnection connect = new SqlConnection("Data Source = R14\\SALEH;Initial Catalog = Course_Discussion; Integrated Security = True");
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            CheckInstructor checkInstructor = new CheckInstructor();
+            username = (string)(Session["username"]);
+            roleId = (int)(Session["roleId"]);
+            discussionId = Request.QueryString["id"];
+            //entryId = Request.QueryString["entryId"];
+            Boolean correct = checkInstructor.sessionIsCorrect(username, roleId);
+            if (correct)
+            {
+                welcome();
+            }
+            else { Response.Redirect("~/default.aspx"); }
+        }
+
+        protected void welcome()
+        {
+            showEntryInformation();
+        }
+
+        protected void btnYes_Click(object sender, EventArgs e)
+        {
+            connect.Open();
+            SqlCommand cmd = connect.CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "update discussions set discussion_terminated = '1' where discussionId = '"+discussionId+"' ";
+            //cmd.CommandText = "delete from entries where entryId = '" + entryId + "' ";
+            cmd.ExecuteScalar();
+            lblMessage.Visible = true;
+            lblMessage.Text = "The discussion (" + discussionId + ") has been successfully terminated!";
+            btnYes.Visible = false;
+        }
+
+        protected void btnCancel_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("~/Accounts/Instructor/Home.aspx?id=" + discussionId);
+        }
+
+        protected void showEntryInformation()
+        {
+            connect.Open();
+            SqlCommand cmd = connect.CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "select count(*) from discussions where discussionId = '" + discussionId + "' ";
+            int countDiscussions = Convert.ToInt32(cmd.ExecuteScalar());
+            if (countDiscussions > 0)
+            {
+                cmd.CommandText = "select discussion_topic from discussions where discussionId = '" + discussionId + "' ";
+                string discussion_topic = cmd.ExecuteScalar().ToString();
+                lblInformation.Text = "Are you sure you want to delete the discussion (" + discussionId + ") which has the following topic: <br />" +
+                    discussion_topic + "<br />";
+            }
+
+            connect.Close();
+        }
+
+
+    }
+}

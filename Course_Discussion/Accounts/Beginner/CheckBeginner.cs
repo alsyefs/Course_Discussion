@@ -10,7 +10,7 @@ namespace Course_Discussion.Accounts.Beginner
     public class CheckBeginner
     {
         /// <summary>
-        /// /
+        /// //
         /// </summary>
         string username = "";
         int roleId = 0;

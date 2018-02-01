@@ -9,6 +9,9 @@ namespace Course_Discussion.Accounts.Beginner
 {
     public class CheckBeginner
     {
+        /// <summary>
+        /// /
+        /// </summary>
         string username = "";
         int roleId = 0;
         SqlConnection connect = new SqlConnection("Data Source = R14\\SALEH;Initial Catalog = Course_Discussion; Integrated Security = True");
